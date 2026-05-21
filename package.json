@@ -14,7 +14,8 @@
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "prestart": "npm run build",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "seed": "tsx src/db/seed.ts"
   },
   "keywords": [],
   "author": "",

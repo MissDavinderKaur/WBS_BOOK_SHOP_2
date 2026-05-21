@@ -1,5 +1,8 @@
+import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { Book } from "../models";
+
+dotenv.config();
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/wbs-events";
 
@@ -254,4 +257,24 @@ const seedBooks = [
     "price": 22.00,
     "image": "https://covers.openlibrary.org/b/isbn/9780307886231-L.jpg"
   }
-]
+];
+
+async function seed() {
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log("Connected to MongoDB for seeding.");
+
+    await Book.deleteMany({});
+    console.log("Cleared existing books.");
+
+    const createdBooks = await Book.insertMany(seedBooks);
+    console.log(`Inserted ${createdBooks.length} books.`);
+  } catch (error) {
+    console.error("Seed error:", error);
+  } finally {
+    await mongoose.disconnect();
+    console.log("Disconnected from MongoDB.");
+  }
+}
+
+seed();
