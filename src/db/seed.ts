@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import { Book } from "../models";
+import bcrypt from "bcryptjs";
+import { Book, User } from "../models";
 
 dotenv.config();
 
@@ -14,7 +15,7 @@ const seedBooks = [
     "category": "Systems",
     "description": "A systems-thinking approach to engineering management.",
     "rating": 4.8,
-    "price": 34.00,
+    "price": 34.0,
     "image": "https://covers.openlibrary.org/b/isbn/9781732265189-L.jpg"
   },
   {
@@ -254,9 +255,18 @@ const seedBooks = [
     "category": "Strategy",
     "description": "The difference between goals and strategy.",
     "rating": 4.7,
-    "price": 22.00,
+    "price": 22.0,
     "image": "https://covers.openlibrary.org/b/isbn/9780307886231-L.jpg"
   }
+];
+
+const seedUsers = [
+  { username: "Aaron", email: "aaron@bookstore.com", password: "password123" },
+  { username: "Beatrice", email: "beatrice@bookstore.com", password: "password123" },
+  { username: "Carl", email: "cark@bookstore.com", password: "password123" },
+  { username: "Deedee", email: "deedee@bookstore.com", password: "password123" },
+  { username: "Edward", email: "edward@bookstore.com", password: "password123" },
+  { username: "Florence", email: "florence@bookstore.com", password: "password123" },
 ];
 
 async function seed() {
@@ -269,6 +279,17 @@ async function seed() {
 
     const createdBooks = await Book.insertMany(seedBooks);
     console.log(`Inserted ${createdBooks.length} books.`);
+
+    await User.deleteMany({});
+    console.log("Cleared existing users.");
+
+    const createdUsers = await Promise.all(
+      seedUsers.map(async (user) => {
+        const hashedPassword = await bcrypt.hash(user.password, 10);
+        return new User({ ...user, password: hashedPassword }).save();
+      })
+    );
+    console.log(`Inserted ${createdUsers.length} users.`);
   } catch (error) {
     console.error("Seed error:", error);
   } finally {
