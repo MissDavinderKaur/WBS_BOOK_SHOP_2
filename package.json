@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/app.js",
-  "type": "module",
   "imports": {
     "#utils": {
       "development": "./src/utils/index.ts",
@@ -11,7 +10,7 @@
     }
   },
   "scripts": {
-    "dev": "node --watch --conditions development src/app.ts",
+    "dev": "tsx --watch src/app.ts",
     "prebuild": "rm -rf dist",
     "build": "tsc",
     "prestart": "npm run build",
@@ -22,6 +21,15 @@
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^24.10.12",
+    "tsx": "^4.22.3",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.6.2",
+    "zod": "^4.4.3"
   }
 }
