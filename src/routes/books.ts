@@ -1,12 +1,18 @@
 import express, { Request, Response } from "express";
 import { Book } from "../models";
+import { bookCreateSchema, bookUpdateSchema } from "../schemas/book";
 
 const router = express.Router();
 
 // POST /books - Create a new book
 router.post("/", async (req: Request, res: Response) => {
   try {
-    const newBook = new Book(req.body);
+    const parsed = bookCreateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Invalid request data", details: parsed.error.flatten().fieldErrors });
+    }
+
+    const newBook = new Book(parsed.data);
     const savedBook = await newBook.save();
     res.status(201).json(savedBook);
   } catch (error) {
@@ -40,9 +46,14 @@ router.get("/:id", async (req: Request, res: Response) => {
 // PUT /books/:id - Update a book
 router.put("/:id", async (req: Request, res: Response) => {
   try {
+    const parsed = bookUpdateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Invalid request data", details: parsed.error.flatten().fieldErrors });
+    }
+
     const updatedBook = await Book.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      parsed.data,
       { new: true, runValidators: true }
     );
     if (!updatedBook) {

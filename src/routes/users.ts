@@ -1,17 +1,19 @@
 import express, { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { User } from "../models";
+import { userDeleteSchema, userLoginSchema, userPasswordUpdateSchema, userRegisterSchema } from "../schemas/user";
 
 const router = express.Router();
 
 // POST /users/register - Create a new user if not already present
 router.post("/register", async (req: Request, res: Response) => {
   try {
-    const { username, email, password } = req.body;
-    if (!username || !email || !password) {
-      return res.status(400).json({ error: "username, email, and password are required" });
+    const parsed = userRegisterSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Invalid request data", details: parsed.error.flatten().fieldErrors });
     }
 
+    const { username, email, password } = parsed.data;
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
       return res.status(409).json({ error: "User already exists" });
@@ -31,11 +33,12 @@ router.post("/register", async (req: Request, res: Response) => {
 // POST /users/login - Authenticate user
 router.post("/login", async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: "email and password are required" });
+    const parsed = userLoginSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Invalid request data", details: parsed.error.flatten().fieldErrors });
     }
 
+    const { email, password } = parsed.data;
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });
@@ -56,11 +59,12 @@ router.post("/login", async (req: Request, res: Response) => {
 // PUT /users/:id/password - Update a user's password
 router.put("/:id/password", async (req: Request, res: Response) => {
   try {
-    const { oldPassword, newPassword } = req.body;
-    if (!oldPassword || !newPassword) {
-      return res.status(400).json({ error: "oldPassword and newPassword are required" });
+    const parsed = userPasswordUpdateSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Invalid request data", details: parsed.error.flatten().fieldErrors });
     }
 
+    const { oldPassword, newPassword } = parsed.data;
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -83,11 +87,12 @@ router.put("/:id/password", async (req: Request, res: Response) => {
 // DELETE /users/:id - Delete a user account
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
-    const { password } = req.body;
-    if (!password) {
-      return res.status(400).json({ error: "password is required to delete account" });
+    const parsed = userDeleteSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Invalid request data", details: parsed.error.flatten().fieldErrors });
     }
 
+    const { password } = parsed.data;
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
