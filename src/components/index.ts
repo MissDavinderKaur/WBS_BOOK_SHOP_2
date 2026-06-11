@@ -3,3 +3,4 @@ export { default as ShopFront } from "./ShopFront";
 export { default as BookDetails } from "./BookDetails";
 export { default as RegisterForm } from "./RegisterForm";
 export { default as LoginForm } from "./LoginForm";
+export { default as Library } from "./Library";

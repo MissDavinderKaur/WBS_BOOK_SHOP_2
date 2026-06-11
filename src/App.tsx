@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import { ShopFront, BookDetails, RegisterForm, LoginForm } from "./components";
+import { ShopFront, BookDetails, RegisterForm, LoginForm, Library } from "./components";
 
 export default function App() {
   const [user, setUser] = useState<any | null>(null);
@@ -27,25 +27,6 @@ export default function App() {
     };
   }, []);
 
-  const [libraryMessage, setLibraryMessage] = useState<string | null>(null);
-
-  async function handleMyLibrary() {
-    if (!user) return;
-    setLibraryMessage(null);
-    try {
-      const response = await fetch(`/api/library/${encodeURIComponent(user.username)}`);
-      const data = await response.json();
-      if (!response.ok) {
-        setLibraryMessage(data.error || "Failed to load library");
-        return;
-      }
-      setLibraryMessage(`Loaded ${Array.isArray(data) ? data.length : 0} library book(s)`);
-      console.log("Library books:", data);
-    } catch (err) {
-      setLibraryMessage(err instanceof Error ? err.message : "Unexpected error");
-    }
-  }
-
   function handleLogout() {
     localStorage.removeItem("user");
     setUser(null);
@@ -62,9 +43,9 @@ export default function App() {
             </div>
             <nav className="flex gap-3">
               {user && (
-                <button onClick={handleMyLibrary} className="rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">
+                <Link to="/library" className="rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">
                   My Library
-                </button>
+                </Link>
               )}
               {!user && (
                 <>
@@ -79,17 +60,13 @@ export default function App() {
               )}
             </nav>
           </header>
-          {libraryMessage && (
-            <div className="mb-4 rounded-md bg-slate-50 p-3 text-slate-700 shadow-sm">
-              {libraryMessage}
-            </div>
-          )}
 
           <Routes>
             <Route path="/" element={<ShopFront />} />
             <Route path="/books/:id" element={<BookDetails />} />
             <Route path="/register" element={<RegisterForm />} />
             <Route path="/login" element={<LoginForm />} />
+            <Route path="/library" element={<Library />} />
           </Routes>
         </div>
       </div>
