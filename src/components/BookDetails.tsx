@@ -7,6 +7,26 @@ export default function BookDetails() {
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [user, setUser] = useState<any | null>(null);
+
+  useEffect(() => {
+    function syncUser() {
+      try {
+        const raw = localStorage.getItem("user");
+        setUser(raw ? JSON.parse(raw) : null);
+      } catch (e) {
+        console.error("Failed to parse user from localStorage", e);
+      }
+    }
+
+    syncUser();
+    window.addEventListener("authchange", syncUser);
+    window.addEventListener("storage", syncUser);
+    return () => {
+      window.removeEventListener("authchange", syncUser);
+      window.removeEventListener("storage", syncUser);
+    };
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -37,15 +57,26 @@ export default function BookDetails() {
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="grid gap-6 md:grid-cols-3">
             <img src={book.image} alt={book.title} className="md:col-span-1 h-96 w-full object-cover rounded-lg" />
-            <div className="md:col-span-2">
-            <h2 className="text-2xl font-semibold">{book.title}</h2>
-            <p className="mt-1 text-sm text-slate-600">by {book.author}</p>
-            <p className="mt-4 text-slate-700">{book.description}</p>
+            <div className="md:col-span-2 flex h-full flex-col">
+              <div>
+                <h2 className="text-2xl font-semibold">{book.title}</h2>
+                <p className="mt-1 text-sm text-slate-600">by {book.author}</p>
+                <br></br>
+                <p className="text-sm text-slate-700">Rating: {book.rating?.toFixed(1) ?? "N/A"}</p>
+                <p className="mt-4 text-slate-700">{book.description}</p>
+              </div>
 
-            <div className="mt-6 flex items-center justify-between">
-                <div className="text-sm text-slate-700">Rating: {book.rating?.toFixed(1) ?? "N/A"}</div>
-                <div className="text-lg font-semibold">${book.price.toFixed(2)}</div>
-            </div>
+              <div className="mt-auto flex flex-col gap-4 pt-6">
+                <div className="flex items-center justify-end border-t border-slate-200 pt-4">
+                {user && (
+                  <div className="flex justify-end">
+                    <button className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+                      Add to my Library
+                    </button>
+                  </div>
+                )}
+                </div>
+              </div>
             </div>
         </div>
         </div>

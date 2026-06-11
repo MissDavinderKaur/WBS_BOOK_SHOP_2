@@ -17,10 +17,6 @@ export default function BookCard({ book }: Props) {
             <p className="mt-1 text-sm text-slate-600">by {book.author}</p>
           </div>
           <p className="max-h-20 overflow-hidden text-sm leading-6 text-slate-700">{book.description}</p>
-          <div className="flex items-center justify-between gap-4 text-sm text-slate-700">
-            <span>Rating: {book.rating?.toFixed(1) ?? "N/A"}</span>
-            <span className="font-semibold text-slate-900">${book.price.toFixed(2)}</span>
-          </div>
         </div>
       </article>
     </Link>
