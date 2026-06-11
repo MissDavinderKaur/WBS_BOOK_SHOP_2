@@ -6,17 +6,31 @@ export default function App() {
   const [user, setUser] = useState<any | null>(null);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("user");
-      if (raw) setUser(JSON.parse(raw));
-    } catch (e) {
-      console.error("Failed to parse user from localStorage", e);
+    function syncUser() {
+      try {
+        const raw = localStorage.getItem("user");
+        setUser(raw ? JSON.parse(raw) : null);
+      } catch (e) {
+        console.error("Failed to parse user from localStorage", e);
+      }
     }
+
+    // initial sync
+    syncUser();
+
+    // update when other parts of the app dispatch auth changes or storage events
+    window.addEventListener("authchange", syncUser);
+    window.addEventListener("storage", syncUser);
+    return () => {
+      window.removeEventListener("authchange", syncUser);
+      window.removeEventListener("storage", syncUser);
+    };
   }, []);
 
   function handleLogout() {
     localStorage.removeItem("user");
     setUser(null);
+    window.dispatchEvent(new Event("authchange"));
   }
 
   return (

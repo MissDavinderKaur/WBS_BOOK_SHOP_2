@@ -27,6 +27,7 @@ export default function RegisterForm() {
       // store user and navigate on success
       try {
         localStorage.setItem("user", JSON.stringify(data));
+        window.dispatchEvent(new Event("authchange"));
       } catch (e) {
         console.error("Failed to save user to localStorage", e);
       }
