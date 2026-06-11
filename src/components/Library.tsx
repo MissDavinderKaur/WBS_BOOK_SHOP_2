@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import type { Book } from "../types/book";
 
 export default function Library() {
@@ -7,30 +7,36 @@ export default function Library() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const location = useLocation();
+
   useEffect(() => {
     const rawUser = localStorage.getItem("user");
-    if (!rawUser) {
+    const params = new URLSearchParams(location.search);
+    const queryUsername = params.get("username");
+
+    if (!rawUser && !queryUsername) {
       setError("Please log in to view your library.");
       setLoading(false);
       return;
     }
 
-    let user: { username?: string; [key: string]: unknown } | null = null;
+    let user: { username?: unknown; [key: string]: unknown } | null = null;
     try {
-      user = JSON.parse(rawUser);
+      user = rawUser ? JSON.parse(rawUser) : null;
     } catch (err) {
       setError("Unable to read logged in user.");
       setLoading(false);
       return;
     }
 
-    if (!user?.username) {
+    const usernameCandidate = queryUsername ?? (typeof user?.username === "string" ? user.username : undefined);
+    if (!usernameCandidate) {
       setError("Please log in to view your library.");
       setLoading(false);
       return;
     }
 
-    const username = user.username;
+    const username = usernameCandidate;
 
     async function loadLibrary() {
       try {
@@ -68,11 +74,6 @@ export default function Library() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">My Library</h1>
-        <Link to="/" className="text-sm text-blue-600 hover:underline">Back to shop</Link>
-      </div>
-
       {books.length === 0 ? (
         <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-700 shadow-sm">
           You have no books in your library yet.

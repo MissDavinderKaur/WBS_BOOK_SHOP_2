@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import type { Book } from "../types/book";
 
 export default function BookDetails() {
@@ -10,6 +10,7 @@ export default function BookDetails() {
   const [user, setUser] = useState<any | null>(null);
   const [libraryStatus, setLibraryStatus] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     function syncUser() {
@@ -63,6 +64,7 @@ export default function BookDetails() {
         return;
       }
       setLibraryStatus("Added to your library!");
+      navigate(`/library?username=${encodeURIComponent(user.username)}`);
     } catch (err) {
       setLibraryStatus(err instanceof Error ? err.message : "Unexpected error");
     } finally {
