@@ -1,4 +1,5 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import type { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { User } from "../models";
 import { userDeleteSchema, userLoginSchema, userPasswordUpdateSchema, userRegisterSchema } from "../schemas/user";

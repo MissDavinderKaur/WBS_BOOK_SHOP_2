@@ -2,7 +2,7 @@
   "compilerOptions": {
     /* Base Options: */
     "esModuleInterop": true, // Enables default imports from CommonJS modules
-    "lib": ["es2022"], // Includes modern ES features in the type system
+    "lib": ["es2022", "dom"], // Includes modern ES features and browser DOM types
     "target": "es2022", // Sets the JavaScript version output
     "skipLibCheck": true, // Skips type checking of declaration files (*.d.ts)
     "allowJs": true, // Allows JavaScript files in the project
@@ -22,11 +22,14 @@
     "types": ["node", "vite/client"],
     "noEmit": false, // Enables output generation
     "outDir": "dist", // Output directory for compiled JavaScript
+    "rootDir": "src",
+    "ignoreDeprecations": "6.0",
     /* Paths */
     "baseUrl": "./src", // Base path for module resolution
     "paths": {
       "#*": ["*"] // Defines internal path aliases with '#' to avoid conflict with '@'
     }
   },
-  "include": ["src"] // Files to include in compilation
+  "include": ["src"], // Files to include in compilation
+  "exclude": ["node_modules", "dist"]
 }

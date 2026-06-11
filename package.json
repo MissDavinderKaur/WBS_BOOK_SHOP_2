@@ -10,7 +10,7 @@
     }
   },
   "scripts": {
-    "dev": "tsx --watch src/app.ts",
+    "dev": "tsx --watch src/server.ts",
     "dev:frontend": "vite",
     "build:frontend": "vite build",
     "preview:frontend": "vite preview",

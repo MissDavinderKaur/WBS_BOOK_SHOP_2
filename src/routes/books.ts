@@ -1,4 +1,5 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import type { Request, Response } from "express";
 import { Book } from "../models";
 import { bookCreateSchema, bookUpdateSchema } from "../schemas/book";
 
