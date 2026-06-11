@@ -8,6 +8,8 @@ export default function BookDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<any | null>(null);
+  const [libraryStatus, setLibraryStatus] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     function syncUser() {
@@ -45,6 +47,29 @@ export default function BookDetails() {
     load();
   }, [id]);
 
+  async function handleAddToLibrary() {
+    if (!user || !book) return;
+    setLibraryStatus(null);
+    setSaving(true);
+    try {
+      const response = await fetch("/api/library", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user.username, bookId: book.id }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setLibraryStatus(data.error || "Unable to add book to library");
+        return;
+      }
+      setLibraryStatus("Added to your library!");
+    } catch (err) {
+      setLibraryStatus(err instanceof Error ? err.message : "Unexpected error");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   if (loading) return <div className="p-8">Loading...</div>;
   if (error) return <div className="p-8 text-red-600">{error}</div>;
   if (!book) return <div className="p-8">Book not found.</div>;
@@ -67,15 +92,17 @@ export default function BookDetails() {
               </div>
 
               <div className="mt-auto flex flex-col gap-4 pt-6">
-                <div className="flex items-center justify-end border-t border-slate-200 pt-4">
                 {user && (
-                  <div className="flex justify-end">
-                    <button className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
-                      Add to my Library
+                  <div className="flex items-center justify-end border-t border-slate-200 pt-4">
+                    <button
+                      onClick={handleAddToLibrary}
+                      disabled={saving}
+                      className="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {saving ? "Adding…" : "Add to my Library"}
                     </button>
                   </div>
                 )}
-                </div>
               </div>
             </div>
         </div>
