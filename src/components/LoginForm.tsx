@@ -23,7 +23,12 @@ export default function LoginForm() {
         setError(data.error || "Login failed");
         return;
       }
-      // on success navigate to home
+      // store user and navigate on success
+      try {
+        localStorage.setItem("user", JSON.stringify(data));
+      } catch (e) {
+        console.error("Failed to save user to localStorage", e);
+      }
       navigate("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unexpected error");
