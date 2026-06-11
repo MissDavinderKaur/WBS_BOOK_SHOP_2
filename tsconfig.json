@@ -18,6 +18,8 @@
     "allowImportingTsExtensions": true, // Allows importing files with .ts extensions
     "rewriteRelativeImportExtensions": true, // Rewrites relative imports with correct extensions
     "module": "preserve", // Preserves ES module syntax (important for native ESM)
+    "jsx": "react-jsx",
+    "types": ["node", "vite/client"],
     "noEmit": false, // Enables output generation
     "outDir": "dist", // Output directory for compiled JavaScript
     /* Paths */
